@@ -2,8 +2,7 @@
 
 #현재 3.14.1 selenium 버전 사용중
 from selenium import webdriver
-#타임 객체 선언
-from time import sleep
+from time import sleep #타임 객체 선언
 import requests
 from bs4 import BeautifulSoup as bs
 
@@ -13,9 +12,46 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 ##전역변수 선언##
+user_id, uesr_pw="",""
 login_stop=1 #로그인 예외처리 변수
 category_index=0 #속성값 추출할 때 사용할 category의 index
-score=[] #내 성적 / 만점 성적
+
+cours,title=[],[] #코스이름, 타이틀내용
+category=[] #카테고리
+my_score,max_score,score=[],[],[] #내성적, 만점성적, 내성적/만점성적
+deadline=[] #마감기한
+
+#GUI카테고리 - 공지사항, 성적, 강의자료, 추가된 과제, 마감예정과제 (각각 코스와 타이틀 내용 따로 담음)
+Notice_cours, Score_cours, Document_cours, Ass_cours, DeadlineAss_cours=[],[],[],[],[]
+Notice_title, Score_title, Document_title, Ass_title, DeadlineAss_title=[],[],[],[],[]
+
+##함수 선언##
+#태그내용에서 text부분만 가져오는 함수 - 파이썬은 list를 넘기면 자동으로 참조에 의한 호출
+def change_text(list):
+    for i in range(0,len(list)):
+        list[i]=list[i].text
+    
+#GUI카테고리별로 들어갈 내용 분류 함수
+def GUI_category():
+    for i in range(len(category)):
+        if(category[i]=="공지 사항"):
+            Notice_cours.append(cours[i])
+            Notice_title.append(title[i])
+        elif(category[i]=="성적"):
+            Score_cours.append(cours[i])
+            Score_title.append(title[i])
+        elif(category[i]=="과제"):
+            #추가된 과제
+            if(title[i][0]=="추"):
+                Ass_cours.append(cours[i])
+                Ass_title.append(title[i])
+            #마감예정과제
+            elif(title[i][0]=="마"):
+                DeadlineAss_cours.append(cours[i])
+                DeadlineAss_title.append(title[i])
+        elif(category[i]=="프레젠테이션" or "텍스트 문서" or "pdf"):
+            Document_cours.append(cours[i])
+            Document_title.append(title[i])
 
 #크롬 웹 드라이버 경로
 driver = webdriver.Chrome('C:\Chrome_Driver\chromedriver.exe')
@@ -55,28 +91,12 @@ response=driver.find_element_by_xpath('//*[@id="body-content"]').get_attribute('
 
 soup = bs(response, 'html.parser')
 
-##제공예정##
-upc_cours=soup.select('.js-upcomingStreamEntries.activity-group.columns.main-column>ul.activity-feed>li>div>div>div>div>div>a')
-upc_title=soup.select('.js-upcomingStreamEntries.activity-group.columns.main-column>ul.activity-feed>li>div>div>div>div>div.name>ng-switch>a')
+##전체 코스이름&타이틀내용##
+cours=soup.select('.context.ellipsis>a')
+title=soup.select('.js-title-link')
 
-##오늘##
-td_cours=soup.select('.js-todayStreamEntries.activity-group.columns.main-column>ul.activity-feed>li>div>div>div>div>div>a')
-td_title=soup.select('.js-todayStreamEntries.activity-group.columns.main-column>ul.activity-feed>li>div>div>div>div>div.name>ng-switch>a')
-
-##최근항목##
-pre_cours=soup.select('.js-previousStreamEntries.activity-group.columns.main-column>ul.activity-feed>li>div>div>div>div>div>a')
-pre_title=soup.select('.js-previousStreamEntries.activity-group.columns.main-column>ul.activity-feed>li>div>div>div>div>div.name>ng-switch>a')
-
-#문자열만 추출 - len() : 리스트 크기
-for i in range(0,len(upc_cours)):
-    upc_cours[i]=upc_cours[i].text
-    upc_title[i]=upc_title[i].text
-for i in range(0,len(td_cours)):
-    td_cours[i]=td_cours[i].text
-    td_title[i]=td_title[i].text
-for i in range(0,len(pre_cours)):
-    pre_cours[i]=pre_cours[i].text
-    pre_title[i]=pre_title[i].text
+change_text(cours) 
+change_text(title)
 
 ##카테고리 구분##
 category=soup.select('svg[class="MuiSvgIconroot-0-2-37 makeStylesdirectionalIcon-0-2-36 makeStylesstrokeIcon-0-2-35 MuiSvgIconcolorPrimary-0-2-38 MuiSvgIconfontSizeLarge-0-2-45"]')
@@ -87,14 +107,19 @@ for icon in category:
     category_index+=1
 
 ##성적##
-myScore=soup.select('span[class="grade-input-display ready"]')
-max_score=soup.select('span[class="points-text"]')
+my_score=soup.select('span[class="grade-input-display ready"]')
+max_score=soup.select('span[class="points-text"]>bdi')
 
-for i in range(0,len(myScore)):
-    myScore[i]=myScore[i].text
-    max_score[i]=max_score[i].text
+change_text(my_score)
+change_text(max_score)
     
-for i in range(0,len(myScore)):
-    score.append(myScore[i]+max_score[i])
+for i in range(0,len(my_score)):
+    score.append(my_score[i]+"/"+max_score[i])
 
-print(category)
+#마감예정과제 마감기한 가져오기
+deadline=soup.select('.content>span>bb-translate>bdi')
+
+##GUI카테고리 리스트 구분##
+GUI_category()
+
+print(score)
