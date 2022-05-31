@@ -16,15 +16,6 @@ from time import sleep
 import requests
 from bs4 import BeautifulSoup as bs
 #창 설정
-root = ttk.Window(
-    title = "Python Project",
-    themename = "litera",
-    size = (730,500), # window size
-    position = (100,100), # window position
-    minsize = (0,0), # minimum width and height of the window
-    maxsize = (1920,1080), # maximum width and height of window
-    resizable = (True,False) # sets whether the window can be resized
-)
 category_index=0 #속성값 추출할 때 사용할 category의 index
 
 cours,title=[],[] #코스이름, 타이틀내용
@@ -36,11 +27,6 @@ deadline=[] #마감기한
 Notice_cours, Score_cours, Document_cours, Ass_cours, DeadlineAss_cours=[],[],[],[],[]
 Notice_title, Score_title, Document_title, Ass_title, DeadlineAss_title=[],[],[],[],[]
 
-#idtext,pwtext 텍스트 박스
-idtext_content=ttk.StringVar()
-pwtext_content=ttk.StringVar()
-idtext = ttk.Entry(root,show=None,width=24,textvariable=idtext_content).grid(row=1, column=1, sticky=ttk.W,padx = 20,pady = 5)
-pwtext = ttk.Entry(root,show="*",width=24,textvariable=pwtext_content).grid(row=2, column=1, sticky=ttk.W,padx = 20,pady = 5)
 #태그내용에서 text부분만 가져오는 함수 - 파이썬은 list를 넘기면 자동으로 참조에 의한 호출
 def change_text(list):
     for i in range(0,len(list)):
@@ -53,7 +39,6 @@ def th():
     th.start()
 #로그인
 def Login() :
-    
     user_id = idtext_content.get()
     sleep(0.5)
     driver.find_element_by_name('uid').send_keys(user_id)
@@ -79,8 +64,8 @@ def Blackboard():
     global my_score,max_score,score #내성적, 만점성적, 내성적/만점성적
     global deadline #마감기한
     
-    #GUI카테고리 - 공지사항, 성적, 강의자료, 추가된 과제, 마감예정과제 (각각 코스와 타이틀 내용 따로 담음)
-    
+#GUI카테고리 - 공지사항, 성적, 강의자료, 추가된 과제, 마감예정과제 (각각 코스와 타이틀 내용 따로 담음)
+    driver.get('https://ecampus.chungbuk.ac.kr/ultra/stream')
     WebDriverWait(driver, 60).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="activity-stream"]/div[2]'))) #최근항목 구분div xpath
     response=driver.find_element_by_xpath('//*[@id="body-content"]').get_attribute('innerHTML')
 
@@ -115,6 +100,7 @@ def Blackboard():
     deadline=soup.select('.content>span>bb-translate>bdi')
 
     change_text(deadline)
+    
 #GUI카테고리별로 들어갈 내용 분류 함수
 def GUI_category():
     for i in range(len(category)):
@@ -136,22 +122,43 @@ def GUI_category():
         elif(category[i]=="프레젠테이션" or "텍스트 문서" or "pdf"):
             Document_cours.append(cours[i])
             Document_title.append(title[i])
+            
 # 로그인 버튼 클릭시 이벤트
 def Button_Click():
-    ttk.Label(root, text = "          로그인중...",font = ("나눔고딕", 10)).grid(row=1,column=3,rowspan=2,padx=5,ipady=25,ipadx=50)
-    #try:
-    Login()
-    ttk.Label(root, text = "               "+Find_Name()+"님 환영합니다.",font = ("나눔고딕", 10)).grid(row=1,column=3,rowspan=2,padx=5,ipady=25,ipadx=40)
-    messagebox.showinfo('로그인','로그인 성공')
-    Blackboard()
-    GUI_category()
-    #for i in range(len(score)):
-        #tv.insert('', END, values=(Score_cours[i],score[i]))
-    print(cours)
-    '''except:
+    try:
+        ttk.Label(root, text = "          로그인중...",font = ("나눔고딕", 10)).grid(row=1,column=3,rowspan=2,padx=5,ipady=25,ipadx=50)
+        Login()
+        Blackboard()
+        messagebox.showinfo('로그인','로그인 성공')
+        ttk.Label(root, text = "               "+Find_Name()+"님 환영합니다.",font = ("나눔고딕", 10)).grid(row=1,column=3,rowspan=2,padx=5,ipady=25,ipadx=40)
+        GUI_category()
+        
+        for i in range(len(score)):
+            tv.insert('', END, values=(Score_cours[i],score[i]))
+        for i in range(len(DeadlineAss_cours)):
+            tv2.insert('', END, values=(DeadlineAss_cours[i],DeadlineAss_title[i],deadline[i]))
+        for i in range(len(Notice_cours)):
+            tv3.insert('', END, values=(Notice_cours[i],Notice_title[i]))
+    except:
         messagebox.showerror('로그인', '로그인 실패')
         ttk.Label(root, text = "               게스트님 환영합니다.",font = ("나눔고딕", 10)).grid(row=1,column=3,rowspan=2,padx=5,ipady=25,ipadx=40)
-        pass '''
+        pass 
+
+    
+root = ttk.Window(
+    title = "Python Project",
+    themename = "litera",
+    size = (730,500), # window size
+    position = (100,100), # window position
+    minsize = (0,0), # minimum width and height of the window
+    maxsize = (1920,1080), # maximum width and height of window
+    resizable = (True,False) # sets whether the window can be resized
+)
+#idtext,pwtext 텍스트 박스
+idtext_content=ttk.StringVar()
+pwtext_content=ttk.StringVar()
+idtext = ttk.Entry(root,show=None,width=24,textvariable=idtext_content).grid(row=1, column=1, sticky=ttk.W,padx = 20,pady = 5)
+pwtext = ttk.Entry(root,show="*",width=24,textvariable=pwtext_content).grid(row=2, column=1, sticky=ttk.W,padx = 20,pady = 5)
 #로그인 버튼
 a =ttk.Button(root,text="LOGIN", bootstyle=(PRIMARY, "outline-toolbutton"),command=th).grid(row=1, column=2,rowspan=2,sticky=ttk.W,ipady = 25,ipadx=40)
 #로그인 버튼 우측 라벨
@@ -167,9 +174,23 @@ nb.pack(
     fill=BOTH
 )
 #탭1(메인)
-nb.add(ttk.Label(nb, text="This is a notebook tab.\nYou can put any widget you want here."), text="    MAIN    ", sticky=NW)
+f5 = ttk.Frame(nb)
+nb.add(f5, text="     메인     ", sticky=NW)
 #탭2(공지)
-nb.add(child=ttk.Label(nb, text="notebook tab 2."),text="  공지사항  ",sticky=NW)
+f4 = ttk.Frame(nb)
+tv3 = ttk.Treeview(
+        master=f4,
+        columns=[0, 1],
+        show=HEADINGS,
+        height=15
+    )
+tv3.heading(0, text='과목명')
+tv3.heading(1, text='내용')
+tv3.column(0, width=190 , anchor=CENTER)
+tv3.column(1, width=460, anchor=CENTER)
+tv3.pack(side=LEFT, anchor=NE, fill=X,padx = 20,pady = 10)
+
+nb.add(f4,text="  공지사항  ",sticky=NW)
 #탭3(과제)
 f2 = ttk.Frame(nb)
 tv2 = ttk.Treeview(
@@ -178,23 +199,12 @@ tv2 = ttk.Treeview(
         show=HEADINGS,
         height=15
     )
-table_data = [
-    (1,'one' , 'a'),
-    (2, 'two','b'),
-    (3, 'three','c'),
-    (4, 'four','d'),
-    (5, 'five','e')
-]
-for row in table_data:
-    tv2.insert('', END, values=row)
-# print(tv.get_children())#('I001', 'I002', 'I003', 'I004', 'I005')
-tv2.selection_set('I002')
 tv2.heading(0, text='과목명')
 tv2.heading(1, text='과제')
 tv2.heading(2, text='마감기한')
-tv2.column(0, width=100)
+tv2.column(0, width=190,anchor=CENTER)
 tv2.column(1, width=350, anchor=CENTER)
-tv2.column(2, width=200)
+tv2.column(2, width=110)
 tv2.pack(side=LEFT, anchor=NE, fill=X,padx = 20,pady = 10)
 nb.add(f2, text='    과제    ',sticky =NW)
 #탭4(성적)
@@ -205,27 +215,19 @@ tv = ttk.Treeview(
         show=HEADINGS,
         height=15
     )
-table_data = [
-    (1,'one'),
-    (2, 'two'),
-    (3, 'three'),
-    (4, 'four'),
-    (5, 'five')
-]
-for row in table_data:
-    tv.insert('', END, values=row)
+
 # print(tv.get_children())#('I001', 'I002', 'I003', 'I004', 'I005')
-tv.selection_set('I002')
 tv.heading(0, text='과목명')
 tv.heading(1, text='성적')
-tv.column(0, width=100)
-tv.column(1, width=550, anchor=CENTER)
+tv.column(0, width=450 , anchor=CENTER)
+tv.column(1, width=200, anchor=CENTER)
 tv.pack(side=LEFT, anchor=NE, fill=X,padx = 20,pady = 10)
 nb.add(f3,text = "     성적     ",sticky=NW)
+
 # 창 숨기는 옵션 추가
 options = webdriver.ChromeOptions()
 options.add_argument("headless")
-driver = webdriver.Chrome('C:\Chrome_Driver\chromedriver.exe',options=options)
+driver = webdriver.Chrome('C:\Chrome_Driver\chromedriver.exe')
 
 #크롬으로 블랙보드 로그인 화면 접속
 url = "https://ecampus.chungbuk.ac.kr/"
