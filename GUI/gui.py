@@ -26,6 +26,8 @@ category=[] #카테고리
 my_score,max_score,score=[],[],[] #내성적, 만점성적, 내성적/만점성적
 deadline=[] #마감기한
 sub_name,sub_day,sub_start,sub_end=[],[],[],[]#과목이름,과목요일,과목시작일자,종료일자
+key1,key2,key3 = [],[],[] #키워드1,2,3
+
 #GUI카테고리 - 공지사항, 성적, 강의자료, 추가된 과제, 마감예정과제 (각각 코스와 타이틀 내용 따로 담음)
 Notice_cours, Score_cours, Document_cours, Ass_cours, DeadlineAss_cours=[],[],[],[],[]
 Notice_title, Score_title, Document_title, Ass_title, DeadlineAss_title=[],[],[],[],[]
@@ -47,13 +49,30 @@ def insert_sub():
         sub_day[i] = sub_day[i].get()
         sub_start[i] = sub_start[i].get()
         sub_end[i] = sub_end[i].get()
-    
+        
+    tv4.delete(*tv4.get_children())
     for i in range(len(sub_name)):
             tv4.insert('', END, values=(sub_name[i],sub_day[i],str(sub_start[i]) + " ~ "+str(sub_end[i])))
+#키워드 불러와 리스트에 삽입
+def insert_keyword():
+    for i in range(0,int(cbo1.get())):
+        key1[i] = key1[i].get()
+        key2[i] = key2[i].get()
+        key3[i] = key3[i].get()
+    print(key1)
+    print(key2)
+    print(key3)
+        
 #과목 입력창 자식 프로세스
 def child1():
 
     info = ttk.Toplevel(root, alpha = 1)
+
+    if(sub_name):
+        del sub_name[0:]
+        del sub_day[0:]
+        del sub_start[0:]
+        del sub_end[0:]
     
     for i in range(0,int(cbo1.get())):
         
@@ -76,6 +95,32 @@ def child1():
     ttk.Button(info,text="완료", bootstyle=PRIMARY,command=lambda:[insert_sub(),info.destroy()]).grid(row=i+1, column=0,columnspan=8,ipady = 25,ipadx=360)
     info.mainloop()
 
+#키워드 입력창 자식 프로세스
+def child2():
+    
+    keyword = ttk.Toplevel(root, alpha = 1)
+
+    if(key1):
+        del key1[0:]
+        del key2[0:]
+        del key3[0:]
+    
+    for i in range(0,int(cbo1.get())):
+        
+        key1.append(ttk.StringVar())
+        key2.append(ttk.StringVar())
+        key3.append(ttk.StringVar())
+        
+        ttk.Label(keyword, text = sub_name[i],font = ("나눔고딕", 9)).grid(row=i,column=0,padx=15,pady=3)
+        ttk.Label(keyword, text = "     키워드1",font = ("나눔고딕", 9)).grid(row=i,column=1,padx=15,pady=3)
+        ttk.Entry(keyword,show=None,width=20,textvariable=key1[i]).grid(row=i,column=2,padx=10,pady=5)
+        ttk.Label(keyword, text = "키워드2",font = ("나눔고딕", 9)).grid(row=i,column=3,padx=15,pady=3)
+        ttk.Entry(keyword,show=None,width=20,textvariable=key2[i]).grid(row=i,column=4,padx=10,pady=5)
+        ttk.Label(keyword, text = "키워드3",font = ("나눔고딕", 9)).grid(row=i,column=5,padx=15,pady=3)
+        ttk.Entry(keyword,show=None,width=20,textvariable=key3[i]).grid(row=i,column=6,padx=10,pady=5)
+        
+    ttk.Button(keyword,text="완료", bootstyle=PRIMARY,command=lambda:[insert_keyword(),keyword.destroy()]).grid(row=i+1, column=0,columnspan=7,ipady = 25,ipadx=500)
+    keyword.mainloop()
         
 #로그인
 def Login() :
@@ -264,7 +309,7 @@ cbo1.grid(row=3,column=2,sticky = ttk.W,pady=3,ipadx = 9)
 
 #과목정보,키워드입력 버튼
 ttk.Button(f5,text="과목 정보 입력", bootstyle=PRIMARY,command=child1).grid(row=3, column=3,sticky=ttk.W,ipadx=2,padx=3)
-ttk.Button(f5,text="과목 키워드 입력", bootstyle=PRIMARY).grid(row=3, column=4,sticky=ttk.W)
+ttk.Button(f5,text="과목 키워드 입력", bootstyle=PRIMARY,command=child2).grid(row=3, column=4,sticky=ttk.W)
 
 ttk.Label(f5, text = "     ",font = ("나눔고딕", 9)).grid(row=3,column=5,padx=25,pady=3)
 
