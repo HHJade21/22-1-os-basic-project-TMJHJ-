@@ -198,9 +198,12 @@ while(1):
         #remain[i]은 과제까지 남은 '분'
         if remain[i]<=24*60:
             text_[i]=DeadlineAss_cours[i]+"의 ["+DeadlineAss_title[i][4:]+"] 과제가 1일(24시간) 남았습니다."
-            
-            if remain[i]<=60:
+
+            if remain[i]<=5*60:
                 text_[i]=DeadlineAss_cours[i]+"의 ["+DeadlineAss_title[i][4:]+"] 과제가 1시간 남았습니다."
+                
+                if remain[i]<=60:
+                    text_[i]=DeadlineAss_cours[i]+"의 ["+DeadlineAss_title[i][4:]+"] 과제가 1시간 남았습니다."
         
         if pre_text[i]!=text_[i]:
             text=text_[i]
