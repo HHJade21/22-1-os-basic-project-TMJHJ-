@@ -606,7 +606,11 @@ nb.pack(
 #탭1(메인)
 f5 = ttk.Frame(nb)
 nb.add(f5, text="     메인     ", sticky=NW)
-ttk.Label(f5, text = "",font = ("나눔고딕", 9)).grid(row=1,column=1,padx=25,pady=10)
+ttk.Label(f5, text = "폴더 관리기능 켜기",font = ("나눔고딕", 9)).grid(row=1,column=1,padx=25,pady=10)
+
+#폴더관리ONOFF 체크버튼
+chk = ttk.IntVar()
+ttk.Checkbutton(f5, text="",variable = chk, bootstyle="round-toggle").grid(row=1,column=2,pady=3,sticky=ttk.W)
 
 ttk.Label(f5, text = "     학기 시작일",font = ("나눔고딕", 9)).grid(row=2,column=1,padx=25,pady=3)
 #학기시작날짜 버튼
