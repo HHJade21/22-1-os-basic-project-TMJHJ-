@@ -200,7 +200,7 @@ while(1):
             text_[i]=DeadlineAss_cours[i]+"의 ["+DeadlineAss_title[i][4:]+"] 과제가 1일(24시간) 남았습니다."
 
             if remain[i]<=5*60:
-                text_[i]=DeadlineAss_cours[i]+"의 ["+DeadlineAss_title[i][4:]+"] 과제가 1시간 남았습니다."
+                text_[i]=DeadlineAss_cours[i]+"의 ["+DeadlineAss_title[i][4:]+"] 과제가 5시간 남았습니다."
                 
                 if remain[i]<=60:
                     text_[i]=DeadlineAss_cours[i]+"의 ["+DeadlineAss_title[i][4:]+"] 과제가 1시간 남았습니다."
@@ -212,7 +212,7 @@ while(1):
                 data={"channel": channel,"text": text})
             pre_text[i]=text_[i] #이전 텍스트에 넣어서 중복여부 파악
     
-    #5초 뒤 반복실행
+    #5초 뒤 반복실행 - 반복했을 때 문자 반복 전송되는지 확인하기 위해 구현
     for i in range(5,0,-1):
         print(str(i)+"...")
         sleep(1)
